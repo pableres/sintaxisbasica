@@ -1,0 +1,93 @@
+#sintaxis básicas
+
+#instalar los paquetes que no estén instalados y llamarlos...
+#primero creamos una función
+ipak <- function(pkg){
+  new.pkg <- pkg[!(pkg %in% installed.packages()[, "Package"])]
+  if (length(new.pkg)) 
+    install.packages(new.pkg, dependencies = TRUE)
+  sapply(pkg, require, character.only = TRUE)
+}
+
+# luego la usamos
+packages <- c("ggplot2", "plyr", "reshape2", "RColorBrewer", "scales", "grid")
+ipak(packages)
+
+
+#crear un factor (variable categórica)
+df$var <- as.factor(df$var)
+
+#dar nombre a las variables (niveles) del factor 
+levels(df$var) <- c("no disorder", "disorder")
+
+#o las dos anteriores juntas...
+mater1<-transform(mater1,V190=factor(V190,labels=c("Muy pobre","Pobre","Medio","Rico","Muy rico")))
+
+#a veces las gráficas salen raras como está arriba. 
+#así podría salir medio, muy pobre, muy rico, pobre y rico. Y en ese orden sale feo.
+#de hecho la línea 21 os marca la función level que indica en qué orden deben presentarse las categorías
+#puede hacerse como en la 21 o...
+mater1$var<-Recode(mater1$var,`1:2 = "Pobre"; 3 = "Medio"; 4:5 = "Rico"`, as.factor.results = TRUE)
+mater1$var<-Recode(mater1$var,`1:2 = "Pobre"; 3 = "Medio"; 4:5 = "Rico"`, as.factor.results = TRUE, levels=c("Pobre","MEdio","Rico"))
+
+
+
+#hacer un mismo análisis para distintos grupos del df
+group_by(df, var) %>%
+  summarise(
+    count = n(),
+    mean = mean(FSFI_total, na.rm = TRUE),
+    sd = sd(FSFI_total, na.rm = TRUE)
+  )
+
+#crear data frames a partir de una condión
+SoloHombres <- basecurso[basecurso$sexo==1,]
+SoloMayores <- basecurso[basecurso$edad>35,]
+
+#recodificar en la misma variable
+SchoolData$Grade[SchoolData$Grade==5] <- "Grade Five"
+#o
+SchoolData$Grade<-recode(SchoolData$Grade,"5=6")
+#o
+SchoolData$Grade<-recode(SchoolData$Grade,"c(1,2,3,4,5)='Five or Less'")
+#o
+SchoolData$Grade<-recode(SchoolData$Grade,"5=6;6=7")
+#
+SchoolData$Grade<-recode(SchoolData$Grade,"1:5='Elementary'")
+#o
+SchoolData$Grade<-recode(SchoolData$Grade,"lo:5='Elementary'")
+#o
+SchoolData$Grade<-recode(SchoolData$Grade,"9:hi='High School'")
+#o
+SchoolData$Grade<-recode(SchoolData$Grade,"1:5='Elementary';6:8='Middle;else='High'")
+
+#si estos últimos los queremos hacer factores de una vez, sería así...
+SchoolData$Grade<-recode(SchoolData$Grade,"1:5='Elementary';6:8='Middle;else='High'", as.factor.result = TRUE)
+
+#recodificar en la DISTINTA varibale
+#igual pero...
+SchoolData$nombredenuevavariable<-recode(SchoolData$Grade....)
+
+#crear un dataframe a partir de algunas variables
+Stigma<-data.frame(cbind(df$UCLA22,df$UCLA13,df$UCLA18,df$UCLA3,df$UCLA24))
+
+#Sumar algunas de las varaibles para crear una nueva variable que sea una sumatoria
+df$e <- rowSums(subset(df, select=a:d))
+#o
+df$e <- df$a + df$b + df$c + df$d
+#o
+Stigma<-data.frame(cbind(df$UCLA22,df$UCLA13,df$UCLA18,df$UCLA3,df$UCLA24))
+df$e <- with(Stigma, rowSums(Stigma))
+
+#cambiar nombres variables
+install.packages("reshape")
+library(reshape)
+names(df2)<- c( "SOS", "Depr","Aut","Autg","mas")  
+
+#Eliminar casos NA
+df2<- df[complete.cases(df), ]
+
+#obtener alguna info
+summary(df)
+table(df)
+descriptives(df)
