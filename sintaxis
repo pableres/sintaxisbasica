@@ -23,16 +23,11 @@ levels(df$var) <- c("no disorder", "disorder")
 #o las dos anteriores juntas...
 mater1<-transform(mater1,V190=factor(V190,labels=c("Muy pobre","Pobre","Medio","Rico","Muy rico")))
 
-#a veces las gráficas salen raras como está arriba. 
-#así podría salir medio, muy pobre, muy rico, pobre y rico. Y en ese orden sale feo.
-#de hecho la línea 21 os marca la función level que indica en qué orden deben presentarse las categorías
-#puede hacerse como en la 21 o...
-mater1$var<-Recode(mater1$var,`1:2 = "Pobre"; 3 = "Medio"; 4:5 = "Rico"`, as.factor.results = TRUE)
-mater1$var<-Recode(mater1$var,`1:2 = "Pobre"; 3 = "Medio"; 4:5 = "Rico"`, as.factor.results = TRUE, levels=c("Pobre","MEdio","Rico"))
 
+mater1$var<-Recode(mater1$var,`1:2 = "Pobre"; 3 = "Medio"; 4:5 = "Rico"`, as.factor.results = TRUE, levels=c("Pobre","Medio","Rico"))
 
-
-#hacer un mismo análisis para distintos grupos del df
+ 
+#hacer un mismo análisis para distintos grupos del df del paquete dplyr
 group_by(df, var) %>%
   summarise(
     count = n(),
@@ -86,6 +81,23 @@ names(df2)<- c( "SOS", "Depr","Aut","Autg","mas")
 
 #Eliminar casos NA
 df2<- df[complete.cases(df), ]
+
+#eliminar variables
+dfclean<-subset(dfclean, select = -total)
+#o
+afe<-subset(afe, select = -c(df.Sexo, df.Edad.Edadenaños))
+
+#dividir la muestra aleatoriamente.paquete caTools
+split <- sample.split(dfinal, SplitRatio = 0.50) 
+afe<-subset(dfinal, split==TRUE)
+afc<-subset(dfinal, split==FALSE)
+
+#modificar el tipo de objeto de un data frame
+
+cols<-c("X1", "X2", "X3" , "X4" , "X5")
+dfinal[cols] <- lapply(dfinal[cols], as.numeric)
+sapply(dfinal, class)
+
 
 #obtener alguna info
 summary(df)
