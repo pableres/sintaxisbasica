@@ -1,0 +1,34 @@
+install.packages("palmerpenguins")
+library(palmerpenguins)
+data(package = 'palmerpenguins')
+
+df <- penguins
+head(df)
+
+mean(df$bill_length_mm,na.rm=TRUE)
+max(df$bill_length_mm, na.rm=TRUE)
+median(df$bill_length_mm, na.rm=TRUE)
+min(df$bill_length_mm, na.rm=TRUE)
+range(df$bill_length_mm, na.rm=TRUE)
+quantile(df$bill_length_mm, na.rm=TRUE)
+IQR(df$bill_length_mm, na.rm=TRUE)
+var(df$bill_length_mm, na.rm=TRUE)
+sd(df$bill_length_mm, na.rm=TRUE)
+
+sapply(df, mean, na.rm=TRUE)
+summary(df)
+require(Hmisc)
+Hmisc::describe(df)
+require(pastecs)
+stat.desc(df)
+res <- stat.desc(df)
+round(res, 2)
+res <- stat.desc(df[,-c(1:2,7)])
+round(res, 2)
+require(psych)
+psych::describe(df)
+psych::describeBy(df, group=df$sex)
+
+library(doBy)
+summaryBy(bill_length_mm + bill_depth_mm ~ island + sex, data = df,
+          FUN = function(x) { c(m = mean(x), s = sd(x)) } )
